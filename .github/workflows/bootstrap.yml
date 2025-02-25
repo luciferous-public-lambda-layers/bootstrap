@@ -1,0 +1,23 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        aws_region:
+          - us-east-1
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLE_ARN_BOOTSTRAP }}
+          aws-region: ${{ matrix.aws_region }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install -g aws-cdk
+      - run: echo "aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ matrix.aws_region }}"
+
